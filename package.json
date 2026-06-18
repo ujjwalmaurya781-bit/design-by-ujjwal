@@ -1,0 +1,17 @@
+{
+  "name": "ujjwal-maurya-portfolio",
+  "version": "1.0.0",
+  "description": "Premium Visual Designer Portfolio for Ujjwal Maurya",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "powershell -ExecutionPolicy Bypass -File server.ps1"
+  },
+  "keywords": [
+    "portfolio",
+    "visual-designer",
+    "creative-agency",
+    "graphic-designer"
+  ],
+  "author": "Ujjwal Maurya",
+  "license": "MIT"
+}
