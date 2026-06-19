@@ -1,22 +1,7 @@
 /**
  * E-Commerce Design Case Study Page
  */
-import { fetchImagesFromFolder, uploadFileToFolder } from '../src/utils.js';
-
-// Helper: list subdirectories under a folder path via backend API
-async function fetchSubdirsFromFolder(folderPath) {
-    try {
-        const response = await fetch(`/api/list-subdirs?folder=${encodeURIComponent(folderPath)}`);
-        if (!response.ok) {
-            console.warn(`Failed to list subdirectories for folder: ${folderPath}. Status: ${response.status}`);
-            return [];
-        }
-        return await response.json();
-    } catch (e) {
-        console.error(`Error fetching subdirs from folder ${folderPath}:`, e);
-        return [];
-    }
-}
+import { fetchImagesFromFolder, uploadFileToFolder, fetchSubdirsFromFolder } from '../src/utils.js';
 
 export function renderEcommerce() {
     return `
