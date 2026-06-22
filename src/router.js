@@ -3,18 +3,18 @@
  * Handles hash changes and dynamic view loading.
  */
 import { renderHome, initHome } from '../pages/home.js';
-import { renderBrandComm, initBrandComm } from '../pages/brand-comm.js';
-import { renderEcommerce, initEcommerce } from '../pages/ecommerce.js';
-import { renderCampaigns, initCampaigns } from '../pages/campaigns.js';
-import { renderRenders, initRenders } from '../pages/renders.js';
+import { renderPortfolioView, initPortfolioView } from '../pages/portfolio-view.js';
+import { renderAdmin, initAdmin } from '../pages/admin.js';
+import { renderProjectDetail, initProjectDetail } from '../pages/project-detail.js';
 import { initScrollObserver, initHeroParallax } from './utils.js';
 
 const routes = {
     'home': renderHome,
-    'brand-comm': renderBrandComm,
-    'ecommerce': renderEcommerce,
-    'campaigns': renderCampaigns,
-    'renders': renderRenders
+    'brand-comm': renderPortfolioView,
+    'ecommerce': renderPortfolioView,
+    'campaigns': renderPortfolioView,
+    'renders': renderPortfolioView,
+    'admin': renderAdmin
 };
 
 export function initRouter() {
@@ -44,7 +44,8 @@ export function initRouter() {
         const route = segments[0] || 'home';
         const subRoute = segments[1]; // e.g., 'goldwood-ply' or undefined
 
-        const renderPage = routes[route];
+        const isProjectRoute = subRoute && ['brand-comm', 'ecommerce', 'campaigns', 'renders', 'ai-creative'].includes(route);
+        const renderPage = isProjectRoute ? renderProjectDetail : routes[route];
 
         if (renderPage) {
             // Fade out
@@ -59,17 +60,21 @@ export function initRouter() {
 
                 // Initialize animations and parallax for specific view
                 initScrollObserver();
-                if (route === 'home') {
+                if (isProjectRoute) {
+                    initProjectDetail(subRoute);
+                } else if (route === 'home') {
                     initHeroParallax();
                     initHome();
                 } else if (route === 'brand-comm') {
-                    initBrandComm(subRoute);
+                    initPortfolioView('brand-comm');
                 } else if (route === 'ecommerce') {
-                    initEcommerce(subRoute);
+                    initPortfolioView('ecommerce');
                 } else if (route === 'campaigns') {
-                    initCampaigns(subRoute);
+                    initPortfolioView('campaigns');
                 } else if (route === 'renders') {
-                    initRenders(subRoute);
+                    initPortfolioView('renders');
+                } else if (route === 'admin') {
+                    initAdmin();
                 }
 
                 // Handle Sub-Anchor scrolling
@@ -77,8 +82,14 @@ export function initRouter() {
                     const targetElement = document.getElementById(anchor);
                     if (targetElement) {
                         setTimeout(() => {
-                            targetElement.scrollIntoView({ behavior: 'smooth' });
-                        }, 100);
+                            const headerOffset = 150;
+                            const elementPosition = targetElement.getBoundingClientRect().top;
+                            const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                            window.scrollTo({
+                                top: offsetPosition,
+                                behavior: 'smooth'
+                            });
+                        }, 200);
                     }
                 } else {
                     // Scroll to top on direct page change

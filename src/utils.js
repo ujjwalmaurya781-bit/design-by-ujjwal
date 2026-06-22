@@ -1,10 +1,21 @@
 /**
  * Helper Utilities & Micro-interactions
  */
-const modules = import.meta.glob('/public/assets/**/*.{png,jpg,jpeg,svg,pdf,webp,JPG,PNG,JPEG,WEBP}', { query: '?url', eager: true });
 
-const assetsManifest = {};
-for (const [key, value] of Object.entries(modules)) {
+// ── Assets Manifest ─────────────────────────────────────────────────────────
+// In dev mode: fetched live from /api/assets-manifest (real filesystem scan).
+// In production build: uses import.meta.glob (compiled at build time).
+//
+// The manifest maps folder paths (e.g. "assets/ecommerce/petro-luxury/product-01/listing/")
+// to arrays of URL strings (e.g. ["assets/ecommerce/petro-luxury/product-01/listing/Artboard 1.png"])
+// ────────────────────────────────────────────────────────────────────────────
+
+// Build-time glob fallback (used in production / first paint before fetch resolves)
+const globModules = import.meta.glob('/public/assets/**/*.{png,jpg,jpeg,svg,pdf,webp,JPG,PNG,JPEG,WEBP}', { query: '?url', eager: true });
+
+export const assetsManifest = {};
+
+for (const [key, value] of Object.entries(globModules)) {
     const cleanKey = key.replace(/^\/public\//, '').split('?')[0];
     const lastSlash = cleanKey.lastIndexOf('/');
     if (lastSlash !== -1) {
@@ -13,7 +24,9 @@ for (const [key, value] of Object.entries(modules)) {
             assetsManifest[folder] = [];
         }
         const resolvedUrl = (value && typeof value === 'object' && 'default' in value) ? value.default : value;
-        const cleanUrl = typeof resolvedUrl === 'string' ? resolvedUrl.replace(/^\//, '').split('?')[0] : cleanKey;
+        // Vite serves public/ assets at root — strip the leading /public/ from the URL
+        let cleanUrl = typeof resolvedUrl === 'string' ? resolvedUrl.replace(/^\/public\//, '/').replace(/^\/?/, '') : cleanKey;
+        cleanUrl = cleanUrl.split('?')[0];
         assetsManifest[folder].push(cleanUrl);
     }
 }
@@ -21,6 +34,30 @@ for (const [key, value] of Object.entries(modules)) {
 for (const folder in assetsManifest) {
     assetsManifest[folder].sort((a, b) => a.localeCompare(b));
 }
+
+// In dev mode, overlay the live filesystem manifest so newly uploaded/added
+// files are visible without a page reload or server restart.
+let _liveManifestLoaded = false;
+
+async function loadLiveManifest() {
+    if (_liveManifestLoaded) return;
+    try {
+        const res = await fetch('/api/assets-manifest');
+        if (!res.ok) return;
+        const liveManifest = await res.json();
+        // Merge live manifest into assetsManifest (live wins)
+        for (const [folder, files] of Object.entries(liveManifest)) {
+            assetsManifest[folder] = files.slice().sort((a, b) => a.localeCompare(b));
+        }
+        _liveManifestLoaded = true;
+        console.log('[AssetsManifest] Live manifest loaded from /api/assets-manifest:', Object.keys(liveManifest).length, 'folders');
+    } catch (err) {
+        // /api/assets-manifest only exists in dev (Vite plugin) — ignore in production
+    }
+}
+
+// Kick off live manifest fetch immediately (non-blocking)
+loadLiveManifest();
 
 
 // 1. Scroll-driven Fade-in Observer
@@ -159,8 +196,11 @@ export function initHeroParallax() {
     });
 }
 
-// 4. Fetch images from a folder via static manifest
+// 4. Fetch images from a folder via manifest (live in dev, glob in prod)
 export async function fetchImagesFromFolder(folderPath) {
+    // Ensure live manifest is loaded before we look up the folder
+    await loadLiveManifest();
+
     let cleanPath = folderPath.replace(/\\/g, '/').replace(/^\//, '');
     if (cleanPath && !cleanPath.endsWith('/')) {
         cleanPath += '/';
@@ -168,8 +208,10 @@ export async function fetchImagesFromFolder(folderPath) {
     return assetsManifest[cleanPath] || [];
 }
 
-// 5. Fetch subdirectories under a folder path via static manifest
+// 5. Fetch subdirectories under a folder path via manifest
 export async function fetchSubdirsFromFolder(folderPath) {
+    await loadLiveManifest();
+
     let cleanPath = folderPath.replace(/\\/g, '/').replace(/^\//, '');
     if (cleanPath && !cleanPath.endsWith('/')) {
         cleanPath += '/';
@@ -190,13 +232,41 @@ export async function fetchSubdirsFromFolder(folderPath) {
     return Array.from(subdirs);
 }
 
-// 6. Upload file to a folder (stubbed since we are 100% static)
+// 6. Upload file to a folder (using local Vite upload API in dev/local mode)
 export async function uploadFileToFolder(folderPath, file) {
-    console.warn("File upload is disabled in static mode.");
-    return false;
+    try {
+        let cleanFolder = folderPath.replace(/\\/g, '/').replace(/^\//, '');
+        if (cleanFolder && !cleanFolder.endsWith('/')) {
+            cleanFolder += '/';
+        }
+        
+        // Construct destination path (ensure it is relative to workspace root and starts with public/assets)
+        const targetPath = `public/${cleanFolder}${file.name}`;
+        
+        const response = await fetch('/api/upload', {
+            method: 'POST',
+            headers: {
+                'x-target-path': targetPath
+            },
+            body: file
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            // Reset live manifest so it re-fetches on next call
+            _liveManifestLoaded = false;
+            return data.success;
+        } else {
+            console.error("Upload failed:", response.statusText);
+            return false;
+        }
+    } catch (err) {
+        console.error("Upload error:", err);
+        return false;
+    }
 }
 
-// 6. Initialize a dynamic image gallery container
+// 7. Initialize a dynamic image gallery container
 export async function initDynamicGallery(brandId, folderPath, onRenderGallery, placeholderText = "Upload Campaign Creatives") {
     const grid = document.getElementById(`grid-${brandId}`);
     if (!grid) return;
