@@ -56,7 +56,7 @@ async function loadLiveManifest() {
 }
 
 // Kick off live manifest fetch immediately (non-blocking)
-loadLiveManifest();
+// loadLiveManifest();
 
 
 // 1. Scroll-driven Fade-in Observer
