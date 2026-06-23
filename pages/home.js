@@ -145,11 +145,13 @@ export function renderHome() {
             <div class="hero-glass-container">
                 <div class="hero-grid">
             <div class="hero-content">
-                <span class="hero-label">BRAND DESIGNER • VISUAL STORYTELLER • AI CREATIVE SPECIALIST</span>
+                <span class="hero-label">
+GRAPHIC DESIGNER • CREATIVE VISUAL DESIGNER
+</span>
                 <h1 class="hero-title">UJJWAL<br>MAURYA</h1>
                 <p class="hero-description">
-                    Visual Designer &amp; Brand Communication Specialist crafting high-impact social media campaigns, advertising creatives, Amazon listing graphics, and visual storytelling experiences.
-                </p>
+Helping brands grow through strategic branding, high-performing social media creatives, ecommerce design and engaging digital experiences.
+</p>
                 
                 <!-- Horizontal Stats Row -->
                 <div class="hero-stats-container">
