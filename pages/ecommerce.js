@@ -156,9 +156,6 @@ async function getAmanziProductAssets(prodId) {
     // Sort gallery images alphabetically
     galleryImages.sort((a, b) => a.localeCompare(b));
     
-    // Console log image count for each product for debugging
-    console.log(`[DEBUG] Product: ${prodId} | Listing Folder: ${listingFolder} | Found Listing: ${listingImages.length} | Found A+: ${aplusImages.length} | Total: ${images.length}`, listingImages);
-    
     return {
         coverImg: coverImg || null,
         gallery: galleryImages,
@@ -199,7 +196,7 @@ export function renderEcommerce(subRoute) {
                 <p style="color: var(--color-text-muted); font-size: 1.15rem; font-weight: 300; margin-bottom: var(--space-md);">
                     Amazon product listings, A+ Content layouts, infographical details, and brand storefront modules. Select a client below to view their listing case study.
                 </p>
-                <a href="#home#selected-work" class="btn btn-secondary" style="padding: 0.75rem 1.5rem; font-size: 0.75rem;">
+                <a href="#selected-work" class="btn btn-secondary" style="padding: 0.75rem 1.5rem; font-size: 0.75rem;">
                     &larr; Back to Portfolio
                 </a>
             </div>

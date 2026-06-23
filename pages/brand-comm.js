@@ -100,7 +100,7 @@ export function renderBrandComm(subRoute) {
                 <p style="color: var(--color-text-muted); font-size: 1.15rem; font-weight: 300; margin-bottom: var(--space-md);">
                     Visual campaigns, product promotions, dealer engagement designs, and brand communication assets. Select a brand below to view its case study and creative gallery.
                 </p>
-                <a href="#home#selected-work" class="btn btn-secondary" style="padding: 0.75rem 1.5rem; font-size: 0.75rem;">
+                <a href="#selected-work" class="btn btn-secondary" style="padding: 0.75rem 1.5rem; font-size: 0.75rem;">
                     &larr; Back to Portfolio
                 </a>
             </div>

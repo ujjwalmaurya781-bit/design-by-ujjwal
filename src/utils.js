@@ -50,7 +50,6 @@ async function loadLiveManifest() {
             assetsManifest[folder] = files.slice().sort((a, b) => a.localeCompare(b));
         }
         _liveManifestLoaded = true;
-        console.log('[AssetsManifest] Live manifest loaded from /api/assets-manifest:', Object.keys(liveManifest).length, 'folders');
     } catch (err) {
         // /api/assets-manifest only exists in dev (Vite plugin) — ignore in production
     }

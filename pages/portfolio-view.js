@@ -227,7 +227,7 @@ export function renderPortfolioView() {
             <p style="color: var(--color-text-muted); font-size: 1.15rem; font-weight: 300; max-width: 800px; margin: 0 auto 35px auto; line-height: 1.7;">
                 Explore high-converting listing designs, premium package visuals, 3D CGI renders, and social media brand communication templates. Click any card to view the case study.
             </p>
-            <a href="#home#selected-work" class="btn btn-secondary" style="padding: 0.75rem 1.5rem; font-size: 0.75rem; border-radius: 30px;">
+            <a href="#selected-work" class="btn btn-secondary" style="padding: 0.75rem 1.5rem; font-size: 0.75rem; border-radius: 30px;">
                 &larr; Back to Home
             </a>
         </div>

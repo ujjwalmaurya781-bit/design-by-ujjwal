@@ -57,7 +57,7 @@ export function renderAICreative(subRoute) {
                 <p style="color: var(--color-text-muted); font-size: 1.15rem; max-width: 650px; font-weight: 300; margin-bottom: var(--space-md);">
                     Generative design, product concept drafts, and workflow integrations showing how AI enhances professional design output. Select a concept project below.
                 </p>
-                <a href="#home#selected-work" class="btn btn-secondary" style="padding: 0.75rem 1.5rem; font-size: 0.75rem;">
+                <a href="#selected-work" class="btn btn-secondary" style="padding: 0.75rem 1.5rem; font-size: 0.75rem;">
                     &larr; Back to Portfolio
                 </a>
             </div>

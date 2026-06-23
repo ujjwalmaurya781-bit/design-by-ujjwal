@@ -22,10 +22,10 @@ export function renderFooter() {
         <div class="footer-mid-col">
             <h4 class="footer-col-header">Connect</h4>
             <div class="footer-social-links-vertical">
-                <a href="mailto:ujjwalmaurya781@gmail.com" target="_blank" rel="noopener" class="footer-link">Email</a>
-                <a href="https://www.linkedin.com/in/ujjwal-maurya-3a997521a" target="_blank" rel="noopener" class="footer-link">LinkedIn</a>
-                <a href="https://www.behance.net/ujjwalmaurya2" target="_blank" rel="noopener" class="footer-link">Behance</a>
-                <a href="https://www.instagram.com/krishhhhhmaurya" target="_blank" rel="noopener" class="footer-link">Instagram</a>
+                <a href="mailto:ujjwalmaurya781@gmail.com" target="_blank" rel="noopener noreferrer" class="footer-link">Email</a>
+                <a href="https://www.linkedin.com/in/ujjwal-maurya-3a997521a" target="_blank" rel="noopener noreferrer" class="footer-link">LinkedIn</a>
+                <a href="https://www.behance.net/ujjwalmaurya2" target="_blank" rel="noopener noreferrer" class="footer-link">Behance</a>
+                <a href="https://instagram.com/ujjwaldesigns" target="_blank" rel="noopener noreferrer" class="footer-link">Instagram</a>
             </div>
         </div>
         

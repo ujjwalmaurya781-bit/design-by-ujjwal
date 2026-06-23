@@ -613,7 +613,7 @@ function buildNextPrevNavigationHTML(proj) {
 
     return `
         <!-- Bottom Navigation -->
-        <section class="next-prev-navigation-section" style="background-color: #050505; border-top: 1px solid var(--color-border); padding: 50px 4vw;">
+        <section class="next-prev-navigation-section">
             <div class="container" style="display: flex; flex-direction: column; align-items: center; gap: 30px;">
                 <style>
                     .next-prev-btn:hover .next-prev-brand-name {
@@ -674,38 +674,7 @@ export function buildProjectDetailHTML(proj) {
     const allItems = proj.sections.flatMap(s => s.items);
     if (proj.layoutType === "amanzi" || allItems.length > 5) {
         chipsHtml = `
-        <div class="project-chips-wrapper" style="position: sticky; top: 70px; z-index: 100; display: flex; flex-wrap: wrap; gap: 12px; padding: 18px 0; background: rgba(3, 3, 3, 0.96); backdrop-filter: blur(16px); margin-bottom: 40px; border-bottom: 1px solid var(--color-border); justify-content: center; width: 100%;">
-            <style>
-                .project-chip-btn {
-                    background: #080808;
-                    border: 1px solid var(--color-border);
-                    color: var(--color-text-muted);
-                    padding: 10px 22px;
-                    border-radius: 24px;
-                    font-family: var(--font-heading);
-                    font-size: 0.8rem;
-                    font-weight: 600;
-                    text-transform: uppercase;
-                    cursor: pointer;
-                    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-                    letter-spacing: 0.05em;
-                }
-                .project-chip-btn:hover {
-                    background: #111 !important;
-                    border-color: rgba(255, 107, 0, 0.5) !important;
-                    color: var(--color-text-light) !important;
-                    transform: translateY(-2px);
-                }
-                .project-chip-btn.active {
-                    background: var(--color-accent) !important;
-                    border-color: var(--color-accent) !important;
-                    color: #fff !important;
-                    box-shadow: 0 0 20px rgba(255, 107, 0, 0.4);
-                }
-                .project-chip-btn:active {
-                    transform: translateY(0);
-                }
-            </style>
+        <div class="project-chips-wrapper">
             ${allItems.map(item => `
                 <button class="project-chip-btn" data-target="product-${item.id}">
                     ${item.name}
@@ -724,8 +693,8 @@ export function buildProjectDetailHTML(proj) {
         const isAdaptive = proj.category === "Campaigns" || proj.category === "Brand Communication";
 
         return `
-        <div class="case-section-block" style="margin-bottom: 60px;">
-            <h2 class="case-section-title-header" style="font-size: 1.8rem; color: var(--color-accent); margin-bottom: 30px; border-bottom: 1px solid var(--color-border); padding-bottom: 10px; text-transform: uppercase; letter-spacing: 0.05em;">${sec.title}</h2>
+        <div class="case-section-block">
+            <h2 class="case-section-title-header">${sec.title}</h2>
             <div class="case-products-wrapper">
                 ${sec.items.map(item => {
                     const showSubtitle = !isAplus && !isAdaptive;
@@ -738,11 +707,11 @@ export function buildProjectDetailHTML(proj) {
 
                     if (proj.layoutType === "amanzi") {
                         return `
-                        <div class="product-group-anchor" id="product-${item.id}" style="margin-bottom: 60px; scroll-margin-top: 150px; border-bottom: 1px solid rgba(255,255,255,0.03); padding-bottom: 40px;">
-                            <h3 class="product-group-title" style="font-family: var(--font-heading); font-size: 1.3rem; font-weight: 700; color: var(--color-text-light); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 20px;">${item.name}</h3>
+                        <div class="product-group-anchor bordered" id="product-${item.id}">
+                            <h3 class="product-group-title large">${item.name}</h3>
                             
                             <!-- Basic Listing Section -->
-                            <div class="product-listing-section" style="margin-bottom: 35px;">
+                            <div class="product-listing-section">
                                 <h4 style="font-family: var(--font-heading); font-size: 0.85rem; font-weight: 700; color: var(--color-text-dark); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 15px;">Basic Listing Images</h4>
                                 <div class="case-adaptive-grid" id="grid-listing-${item.id}">
                                     <div class="grid-loading-placeholder" style="color: var(--color-text-dark); font-family: var(--font-heading); font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase;">Loading listings...</div>
@@ -750,7 +719,7 @@ export function buildProjectDetailHTML(proj) {
                             </div>
                             
                             <!-- A+ Content Section -->
-                            <div class="product-aplus-section" id="aplus-section-${item.id}" style="margin-top: 35px;">
+                            <div class="product-aplus-section" id="aplus-section-${item.id}">
                                 <h4 style="font-family: var(--font-heading); font-size: 0.85rem; font-weight: 700; color: var(--color-text-dark); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 15px;">A+ Content</h4>
                                 <div class="case-aplus-story-list" id="grid-aplus-${item.id}">
                                     <div class="grid-loading-placeholder" style="color: var(--color-text-dark); font-family: var(--font-heading); font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase;">Loading A+ Content...</div>
@@ -761,8 +730,8 @@ export function buildProjectDetailHTML(proj) {
                     }
 
                     return `
-                    <div class="product-group-anchor" id="product-${item.id}" style="margin-bottom: 40px; scroll-margin-top: 150px;">
-                        <h3 class="product-group-title" style="font-family: var(--font-heading); font-size: 1.2rem; font-weight: 700; color: var(--color-text-light); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 20px; display: ${showSubtitle ? 'block' : 'none'};">${item.name}</h3>
+                    <div class="product-group-anchor" id="product-${item.id}">
+                        <h3 class="product-group-title" style="display: ${showSubtitle ? 'block' : 'none'};">${item.name}</h3>
                         <div class="${gridClass}" id="grid-${item.id}">
                             <div class="grid-loading-placeholder" style="color: var(--color-text-dark); font-family: var(--font-heading); font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase;">Loading creatives...</div>
                         </div>
@@ -776,7 +745,7 @@ export function buildProjectDetailHTML(proj) {
 
     return `
     <!-- Case Study Dynamic Page Layout -->
-    <section class="case-study-hero" style="background-image: linear-gradient(180deg, rgba(10, 10, 10, 0.4) 0%, rgba(10, 10, 10, 0.95) 100%), radial-gradient(circle at center, #1f1208 0%, #050505 100%); background-size: cover; background-position: center; min-height: 32vh; display: flex; align-items: center; padding: 100px 0 30px 0; border-bottom: 1px solid var(--color-border);">
+    <section class="case-study-hero">
         <div class="container">
             <span class="case-study-category" style="color: var(--color-accent); font-family: var(--font-heading); font-size: 0.85rem; font-weight: 600; letter-spacing: 0.25em; text-transform: uppercase; margin-bottom: 10px; display: block;">${proj.category} Design Case Study</span>
             <h1 class="case-study-title" style="font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 900; letter-spacing: -0.02em; margin-bottom: 10px; color: var(--color-text-light); text-transform: uppercase;">${proj.title}</h1>
@@ -802,7 +771,7 @@ export function buildProjectDetailHTML(proj) {
     ${buildTopNextPrevNavigationHTML(proj)}
 
     <!-- Case Study Overview Section -->
-    <section class="case-overview-section" style="background-color: #050505; padding: 60px 4vw; border-bottom: 1px solid var(--color-border);">
+    <section class="case-overview-section">
         <div class="container case-overview-grid">
             <div>
                 <span style="font-family: var(--font-heading); color: var(--color-accent); font-weight: 600; font-size: 0.8rem; letter-spacing: 0.2em; text-transform: uppercase; display: block; margin-bottom: 12px;">Project Objective</span>
@@ -819,7 +788,7 @@ export function buildProjectDetailHTML(proj) {
     </section>
 
     <!-- Showcase Container -->
-    <section class="case-showcase-section" style="background-color: #030303; padding: 60px 4vw;">
+    <section class="case-showcase-section">
         <div class="container">
             ${chipsHtml}
             
@@ -840,6 +809,7 @@ export function buildProjectDetailHTML(proj) {
         </div>
         <button class="lightbox-btn lightbox-next-btn" id="lightbox-next-btn" aria-label="Next Image">&rsaquo;</button>
         <div class="lightbox-counter" id="lightbox-img-counter">Image 0 / 0</div>
+        <div class="lightbox-swipe-hint">Swipe to browse</div>
     </div>
 
     ${buildNextPrevNavigationHTML(proj)}
@@ -1189,12 +1159,7 @@ export async function initProjectDetail(projectId) {
                 }
 
                 // General console logs showing detected image count per product
-                if (currentProject.layoutType === "amanzi") {
-                    console.log(`[DEBUG] Product: ${item.name} (${item.id}) | Listing Folder: ${folderPath} | Found: ${listingImages.length}`, listingImages);
-                    if (aplusFolderPath) {
-                        console.log(`[DEBUG] Product: ${item.name} (${item.id}) | A+ Folder: ${aplusFolderPath} | Found: ${aplusImages.length}`, aplusImages);
-                    }
-                }
+                // Debug information removed for production
 
                 // Update the item properties for UI rendering
                 item.folder = folderPath;

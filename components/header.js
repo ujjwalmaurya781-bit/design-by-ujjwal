@@ -26,11 +26,11 @@ export function renderHeader() {
         </button>
 
         <ul class="nav-menu" id="nav-menu">
-            <li><a href="#home" class="nav-link active" data-section="home">Home</a></li>
-            <li><a href="#home#selected-work" class="nav-link" data-section="selected-work">Selected Work</a></li>
-            <li><a href="#home#about" class="nav-link" data-section="about">About</a></li>
-            <li><a href="#home#resume" class="nav-link" data-section="resume">Resume</a></li>
-            <li><a href="#home#contact" class="nav-link" data-section="contact">Contact</a></li>
+            <li><a href="#home" class="nav-link active" data-section="home">HOME</a></li>
+            <li><a href="#selected-work" class="nav-link" data-section="selected-work">SELECTED WORK</a></li>
+            <li><a href="#about" class="nav-link" data-section="about">ABOUT</a></li>
+            <li><a href="#resume" class="nav-link" data-section="resume">RESUME</a></li>
+            <li><a href="#contact" class="nav-link" data-section="contact">CONTACT</a></li>
         </ul>
     </div>
     `;
@@ -61,13 +61,104 @@ export function initHeader() {
 
     // Close Menu on Link Click
     navLinks.forEach(link => {
-        link.addEventListener('click', () => {
+        link.addEventListener('click', (e) => {
             mobileToggle.classList.remove('open');
             navMenu.classList.remove('open');
 
-            // Handle active state
-            navLinks.forEach(l => l.classList.remove('active'));
-            link.classList.add('active');
+            // Smooth scroll to section
+            const href = link.getAttribute('href');
+            if (href && href.startsWith('#')) {
+                const sectionId = href.substring(1);
+                const targetElement = document.getElementById(sectionId);
+                if (targetElement) {
+                    e.preventDefault();
+                    const headerHeight = header.offsetHeight || 80;
+                    const targetPosition = targetElement.getBoundingClientRect().top + window.scrollY - headerHeight;
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            }
         });
     });
+
+    // Run Scroll Spy initially
+    initHeaderScrollSpy();
+}
+
+export function initHeaderScrollSpy() {
+    const navLinks = document.querySelectorAll('.nav-link');
+    
+    // Disconnect old observer/listeners if they exist
+    if (window._headerObserver) {
+        window._headerObserver.disconnect();
+    }
+    if (window._headerScrollHandler) {
+        window.removeEventListener('scroll', window._headerScrollHandler);
+    }
+
+    // Scroll Spy with Intersection Observer
+    const observerOptions = {
+        root: null,
+        rootMargin: '-50% 0px -50% 0px',
+        threshold: 0
+    };
+
+    const sectionObserver = new IntersectionObserver((entries) => {
+        // Only run observer logic if we are NOT at the absolute bottom to prevent conflict
+        const isAtBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 50;
+        if (isAtBottom) return;
+
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const sectionId = entry.target.id;
+                const activeLink = document.querySelector(`.nav-link[data-section="${sectionId}"]`);
+                const activeDot = document.querySelector(`.nav-dot[data-section="${sectionId}"]`);
+                
+                if (activeLink) {
+                    navLinks.forEach(link => link.classList.remove('active'));
+                    activeLink.classList.add('active');
+                }
+                if (activeDot) {
+                    const navDots = document.querySelectorAll('.nav-dot');
+                    navDots.forEach(dot => dot.classList.remove('active'));
+                    activeDot.classList.add('active');
+                }
+            }
+        });
+    }, observerOptions);
+
+    // Observe all major sections
+    const sections = document.querySelectorAll('section[id]');
+    sections.forEach(section => sectionObserver.observe(section));
+
+    // Scroll boundary handler for bottom of page
+    const handleScrollBoundary = () => {
+        const isAtBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 50;
+        if (isAtBottom) {
+            const contactLink = document.querySelector('.nav-link[data-section="contact"]');
+            const contactDot = document.querySelector('.nav-dot[data-section="contact"]');
+            if (contactLink && !contactLink.classList.contains('active')) {
+                navLinks.forEach(link => link.classList.remove('active'));
+                contactLink.classList.add('active');
+            }
+            if (contactDot && !contactDot.classList.contains('active')) {
+                const navDots = document.querySelectorAll('.nav-dot');
+                navDots.forEach(dot => dot.classList.remove('active'));
+                contactDot.classList.add('active');
+            }
+        }
+    };
+
+    window.addEventListener('scroll', handleScrollBoundary);
+    window._headerScrollHandler = handleScrollBoundary;
+
+    // Cleanup on route change
+    window._headerObserver = sectionObserver;
+    window._headerObserverCleanup = () => {
+        sectionObserver.disconnect();
+        window.removeEventListener('scroll', window._headerScrollHandler);
+        window._headerScrollHandler = null;
+    };
 }

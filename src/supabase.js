@@ -8,6 +8,6 @@ export const supabase = (SUPABASE_URL && SUPABASE_ANON_KEY)
     ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) 
     : null;
 
-if (!supabase) {
+if (!supabase && import.meta.env.DEV) {
     console.warn("Supabase is unconfigured or credentials are blank. Running in static fallback mode.");
 }

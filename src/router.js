@@ -7,6 +7,7 @@ import { renderPortfolioView, initPortfolioView } from '../pages/portfolio-view.
 import { renderAdmin, initAdmin } from '../pages/admin.js';
 import { renderProjectDetail, initProjectDetail } from '../pages/project-detail.js';
 import { initScrollObserver, initHeroParallax } from './utils.js';
+import { initHeaderScrollSpy } from '../components/header.js';
 
 const routes = {
     'home': renderHome,
@@ -25,88 +26,100 @@ export function initRouter() {
 
     function handleRouting() {
         const hash = window.location.hash || '#home';
-        
-        let routeAndSub = hash.replace(/^#/, '');
-        let anchor = null;
+        let route = hash.replace(/^#/, '').split('/')[0] || 'home';
+        const subRoute = hash.split('/')[1]; // For project detail routes
 
-        // Parse route, subroute and anchors
-        if (hash.startsWith('#home#')) {
-            const parts = hash.split('#').filter(Boolean);
-            routeAndSub = 'home';
-            anchor = parts[1];
-        } else if (hash.includes('#') && hash.lastIndexOf('#') > 0) {
-            const parts = hash.split('#').filter(Boolean);
-            routeAndSub = parts[0];
-            anchor = parts[1];
+        // If hash is just a section ID like #selected-work, keep it as home route but scroll to section
+        if (hash.startsWith('#') && !hash.includes('/') && hash !== '#home') {
+            const sectionId = hash.substring(1);
+            const targetElement = document.getElementById(sectionId);
+            if (targetElement) {
+                setTimeout(() => {
+                    const header = document.getElementById('app-header');
+                    const headerHeight = header ? header.offsetHeight : 80;
+                    const targetPosition = targetElement.getBoundingClientRect().top + window.scrollY - headerHeight;
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                }, 100);
+                return;
+            }
         }
 
-        const segments = routeAndSub.split('/');
-        const route = segments[0] || 'home';
-        const subRoute = segments[1]; // e.g., 'goldwood-ply' or undefined
-
         const isProjectRoute = subRoute && ['brand-comm', 'ecommerce', 'campaigns', 'renders', 'ai-creative'].includes(route);
-        const renderPage = isProjectRoute ? renderProjectDetail : routes[route];
+        const renderPage = isProjectRoute ? renderProjectDetail : (routes[route] || routes['home']);
 
         if (renderPage) {
-            // Fade out
             appRoot.classList.remove('active');
 
             setTimeout(() => {
-                // Update HTML, passing subRoute context
                 appRoot.innerHTML = renderPage(subRoute);
-                
-                // Set page transition active
                 appRoot.classList.add('active');
 
-                // Initialize animations and parallax for specific view
+                const isHomeRoute = renderPage === renderHome;
+
                 initScrollObserver();
                 if (isProjectRoute) {
                     initProjectDetail(subRoute);
-                } else if (route === 'home') {
+                } else if (isHomeRoute) {
                     initHeroParallax();
                     initHome();
-                } else if (route === 'brand-comm') {
-                    initPortfolioView('brand-comm');
-                } else if (route === 'ecommerce') {
-                    initPortfolioView('ecommerce');
-                } else if (route === 'campaigns') {
-                    initPortfolioView('campaigns');
-                } else if (route === 'renders') {
-                    initPortfolioView('renders');
+                } else if (['brand-comm', 'ecommerce', 'campaigns', 'renders'].includes(route)) {
+                    initPortfolioView(route);
                 } else if (route === 'admin') {
                     initAdmin();
                 }
 
-                // Handle Sub-Anchor scrolling
-                if (anchor) {
-                    const targetElement = document.getElementById(anchor);
-                    if (targetElement) {
+                // Scroll to top by default, or to specific section if hash exists
+                let scrolledToSection = false;
+                if (hash.startsWith('#') && hash !== '#home' && !hash.includes('/')) {
+                    const secId = hash.substring(1);
+                    const target = document.getElementById(secId);
+                    if (target) {
                         setTimeout(() => {
-                            const headerOffset = 150;
-                            const elementPosition = targetElement.getBoundingClientRect().top;
-                            const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                            const header = document.getElementById('app-header');
+                            const headerHeight = header ? header.offsetHeight : 80;
+                            const targetPosition = target.getBoundingClientRect().top + window.scrollY - headerHeight;
                             window.scrollTo({
-                                top: offsetPosition,
+                                top: targetPosition,
                                 behavior: 'smooth'
                             });
-                        }, 200);
+                        }, 150);
+                        scrolledToSection = true;
                     }
-                } else {
-                    // Scroll to top on direct page change
+                }
+                
+                if (!scrolledToSection) {
                     window.scrollTo(0, 0);
                 }
 
-                // Sync Navbar Active Links
-                updateActiveNavLink(route, anchor);
-
-                // Rebind custom cursor handlers
+                // Rebind cursor handlers
                 if (window.rebindCursor) {
                     window.rebindCursor();
                 }
+                
+                // Cleanup old observers
+                if (window._headerObserverCleanup) {
+                    window._headerObserverCleanup();
+                }
+
+                if (isHomeRoute) {
+                    // Initialize Scroll Spy for the home page sections
+                    initHeaderScrollSpy();
+                } else {
+                    // Highlight correct navigation link manually on subpages
+                    const navLinks = document.querySelectorAll('.nav-link');
+                    navLinks.forEach(link => link.classList.remove('active'));
+                    
+                    if (isProjectRoute || ['brand-comm', 'ecommerce', 'campaigns', 'renders', 'ai-creative'].includes(route)) {
+                        const selectedWorkLink = document.querySelector('.nav-link[data-section="selected-work"]');
+                        if (selectedWorkLink) {
+                            selectedWorkLink.classList.add('active');
+                        }
+                    }
+                }
             }, 200);
-        } else {
-            // Fallback to home
-            window.location.hash = '#home';
         }
     }
 
@@ -116,20 +129,4 @@ export function initRouter() {
     
     // Initial call
     handleRouting();
-}
-
-function updateActiveNavLink(route, anchor) {
-    const navLinks = document.querySelectorAll('.nav-link');
-    navLinks.forEach(link => {
-        link.classList.remove('active');
-        
-        const href = link.getAttribute('href');
-        if (anchor && href.includes(`#${route}#${anchor}`)) {
-            link.classList.add('active');
-        } else if (!anchor && href === `#${route}`) {
-            link.classList.add('active');
-        } else if (!anchor && route === 'home' && href === '#home') {
-            link.classList.add('active');
-        }
-    });
 }

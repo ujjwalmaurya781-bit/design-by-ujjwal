@@ -59,7 +59,7 @@ export function renderCampaigns(subRoute) {
                 <p style="color: var(--color-text-muted); font-size: 1.15rem; font-weight: 300; margin-bottom: var(--space-md);">
                     Advertising posters, product launch visuals, creative branding banners, and commercial visual concepts. Select a brand below to view its campaign case study.
                 </p>
-                <a href="#home#selected-work" class="btn btn-secondary" style="padding: 0.75rem 1.5rem; font-size: 0.75rem;">
+                <a href="#selected-work" class="btn btn-secondary" style="padding: 0.75rem 1.5rem; font-size: 0.75rem;">
                     &larr; Back to Portfolio
                 </a>
             </div>
